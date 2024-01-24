@@ -1,7 +1,9 @@
 //jshint esversion:6
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const PORT = process.env.PORT;
 
 const app = express();
 app.set("view engine", "ejs");
@@ -9,12 +11,14 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
 
-mongoose.connect(
-  "mongodb+srv://admin-kamalakanta:test2023@todolistcluster.4hqtooi.mongodb.net/todolistDB",
-  {
+mongoose
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
-  }
-);
+  })
+  .then(console.log("DB connected successfully"))
+  .catch("err", function (err) {
+    console.log(err);
+  });
 
 //DAILY TASK DATA
 const itemsSchema = {
@@ -44,7 +48,7 @@ const worksSchema = {
 const Work = mongoose.model("work", worksSchema);
 const work1 = new Item({
   name: "Send Letter",
-  date: 2023 / 01 / 03,
+  date: 2023 / 0o1 / 0o3,
 });
 const defaultWorks = [work1];
 
@@ -133,7 +137,7 @@ app.get("/work", function (req, res) {
         if (err) {
           console.log(err);
         } else {
-          console.log("Successfully Stored data.");
+          console.log("Successfully Stored data");
         }
       });
       res.redirect("/work");
@@ -148,6 +152,6 @@ app.get("/work", function (req, res) {
   });
 });
 
-app.listen(3000, function () {
-  console.log("Server is running on port 3000");
+app.listen(PORT, function () {
+  console.log(`Server listening on port:${PORT}`);
 });
